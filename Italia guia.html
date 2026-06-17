@@ -59,10 +59,16 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--mo
 
 @media(max-width:700px){
   #app-body{flex-direction:column}
-  #map{flex:1;width:100%;min-height:0}
+  #map{
+    width:100%;flex:none;
+    height:33vh;
+    transition:height 0.3s cubic-bezier(0.32,0.72,0,1);
+    min-height:0;
+  }
+  #app-body.panel-open #map{height:28vh}
   #panel{
     position:fixed;bottom:0;left:0;right:0;width:100%;
-    height:72vh;
+    height:67vh;
     border-left:none;border-top:2px solid var(--ink);
     transform:translateY(calc(100% - 52px));
     transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);
@@ -70,6 +76,8 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--mo
     padding-bottom:env(safe-area-inset-bottom,0px);
   }
   #panel.open{transform:translateY(0)}
+  .leaflet-bottom.leaflet-right{bottom:calc(67vh - 30px)!important}
+  #app-body.panel-open .leaflet-bottom.leaflet-right{bottom:calc(72vh - 30px)!important}
 }
 #panel-handle{display:none;align-items:center;justify-content:center;padding:12px 0 7px;cursor:pointer;flex-shrink:0;border-bottom:1px solid var(--faint)}
 #panel-handle::before{content:'';width:36px;height:3px;background:var(--faint);border-radius:2px}
@@ -165,9 +173,9 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--mo
 .sec-text{font-size:13px;line-height:1.8;color:var(--mid)}
 .sec-text p{margin-bottom:9px}
 .sec-text p:last-child{margin-bottom:0}
-.sec-block.speaking .sec-label{color:var(--acc)}
-.sec-block.speaking .sec-label i{color:var(--acc)}
-.sec-block.speaking{background:var(--acc-pale);border-radius:2px;margin:0 4px;padding:10px 9px}
+.sec-block.speaking .sec-label{color:var(--ink)}
+.sec-block.speaking .sec-label i{color:var(--mid)}
+.sec-block.speaking{background:#ccc6b4;border-radius:2px;margin:0 4px;padding:10px 9px}
 .links-block{padding:10px 13px;border-top:1px solid var(--faint);display:flex;flex-direction:column;gap:5px}
 .links-label{font-size:10px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--mid);margin-bottom:4px}
 .official-link{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--acc);text-decoration:none;padding:3px 0}
@@ -210,8 +218,11 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--mo
 .map-sel{border:3px solid white!important;transform:scale(1.6)!important;animation:mpulse 1.8s ease-in-out infinite;z-index:9999}
 
 /* Leaflet overrides */
-.leaflet-control-zoom{margin-bottom:max(16px,env(safe-area-inset-bottom,16px))!important;margin-right:10px!important}
+.leaflet-control-zoom{margin-bottom:12px!important;margin-right:10px!important}
 .leaflet-control-zoom a{background:var(--sur)!important;color:var(--ink)!important;border-color:var(--faint)!important;font-family:var(--mono)!important}
+@media(max-width:700px){
+  .leaflet-bottom.leaflet-right{bottom:calc(72vh - 40px)!important}
+}
 .leaflet-control-attribution{background:rgba(217,212,199,0.85)!important;color:var(--mid)!important;font-size:9px!important;font-family:var(--mono)!important}
 .leaflet-popup-content-wrapper{background:var(--sur)!important;border:1px solid var(--ink)!important;border-radius:2px!important;box-shadow:3px 3px 0 rgba(24,24,15,0.12)!important}
 .leaflet-popup-tip{background:var(--sur)!important}
@@ -375,7 +386,10 @@ function initMap() {
       var color = pt.type==='restaurante' && di===5 ? REST_COLOR : day.color;
       var m = L.marker([pt.lat,pt.lng],{icon:markerIcon(color,pt.type,false)}).addTo(map)
         .bindTooltip(pt.name,{direction:'top',offset:[0,-4]});
-      m.on('click',(function(d,p){ return function(){ openDetail(d,p); }; })(di,pi));
+      m.on('click',(function(d,p){ return function(){
+        openDetail(d,p);
+        if(window.innerWidth<=700) openSheet();
+      }; })(di,pi));
       markers.push({marker:m, point:pt, dayIdx:di, day:day, di:di, pi:pi,
                     color: color});
     });
@@ -403,10 +417,15 @@ function clearSelMarker(){
 /* ── FILTER DAY ── */
 function filterDay(day,btn){
   activeDay=day; activeMode='normal';
+  // Cerrar detalle y panel si estaba abierto
+  if(document.getElementById('detail').classList.contains('open')) closeDetail();
+  closeSheet();
   document.querySelectorAll('.day-pill').forEach(function(p){p.classList.remove('active');});
   document.getElementById('btn-rest-venecia').classList.remove('active');
   btn.classList.add('active');
   updateVis(); renderList();
+  // Scroll lista al inicio
+  document.getElementById('point-list').scrollTop=0;
   if(day!=='all'){
     var dm=markers.filter(function(m){return m.dayIdx===parseInt(day);});
     if(dm.length){var g=L.featureGroup(dm.map(function(m){return m.marker;}));map.fitBounds(g.getBounds().pad(0.1),{maxZoom:14});}
@@ -587,7 +606,7 @@ function closeDetail(){
   document.getElementById('detail').classList.remove('open');
   currentDetail=null;
 }
-function goToOnMap(){if(!currentDetail)return;map.setView([currentDetail.pt.lat,currentDetail.pt.lng],17);if(window.innerWidth<=700)closeSheet();}
+function goToOnMap(){if(!currentDetail)return;map.setView([currentDetail.pt.lat,currentDetail.pt.lng],17);if(window.innerWidth<=700){closeDetail();closeSheet();}}
 function openGMaps(){if(!currentDetail)return;window.open('https://www.google.com/maps/dir/?api=1&destination='+currentDetail.pt.lat+','+currentDetail.pt.lng+'&travelmode=driving','_blank');}
 
 /* ── AUDIO ── */
@@ -656,8 +675,16 @@ function setRate(v){
 
 /* ── SHEET ── */
 function toggleSheet(){sheetOpen?closeSheet():openSheet();}
-function openSheet(){document.getElementById('panel').classList.add('open');sheetOpen=true;}
-function closeSheet(){document.getElementById('panel').classList.remove('open');sheetOpen=false;}
+function openSheet(){
+  document.getElementById('panel').classList.add('open');
+  document.getElementById('app-body').classList.add('panel-open');
+  sheetOpen=true;
+}
+function closeSheet(){
+  document.getElementById('panel').classList.remove('open');
+  document.getElementById('app-body').classList.remove('panel-open');
+  sheetOpen=false;
+}
 
 /* ── GEOLOC ── */
 var locating=false;
@@ -670,7 +697,7 @@ function startLocate(){
   btn.innerHTML='<i class="ph ph-person-simple-walk"></i>Siguiendo';
   watchId=navigator.geolocation.watchPosition(function(pos){
     var lat=pos.coords.latitude, lng=pos.coords.longitude, acc=pos.coords.accuracy;
-    var icon=L.divIcon({className:'',html:'<div style="width:14px;height:14px;border-radius:50%;background:#1e6b3a;border:2.5px solid white;box-shadow:0 0 0 3px rgba(30,107,58,0.22),0 2px 6px rgba(0,0,0,0.25)"></div>',iconSize:[14,14],iconAnchor:[7,7]});
+    var icon=L.divIcon({className:'',html:'<div style="width:28px;height:28px;border-radius:50%;background:#18180f;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center"><i class=\"ph ph-person-simple-walk\" style=\"font-size:16px;color:#d9d4c7\"></i></div>',iconSize:[28,28],iconAnchor:[14,14]});
     userMarker?userMarker.setLatLng([lat,lng]):(userMarker=L.marker([lat,lng],{icon:icon,zIndexOffset:1000}).addTo(map));
     accuracyCircle?accuracyCircle.setLatLng([lat,lng]).setRadius(acc):(accuracyCircle=L.circle([lat,lng],{radius:acc,color:'#1e6b3a',fillColor:'#1e6b3a',fillOpacity:0.08,weight:1}).addTo(map));
     if(!map._locMoved){map.setView([lat,lng],14);map._locMoved=true;}
