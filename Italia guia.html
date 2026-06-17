@@ -20,6 +20,8 @@
   --faint:#c8c3b6;--acc:#1e6b3a;--acc-pale:#dff0e7;
   --rest-color:#8b1a1a;--rest-pale:#f5e6e6;
   --mono:'IBM Plex Mono',monospace;
+  --chrome-h:0px;  /* altura header+daybar, se calcula en JS */
+  --map-h:33vh;    /* altura del mapa, cambia con panel abierto */
 }
 html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--mono);font-size:14px;line-height:1.55;-webkit-tap-highlight-color:transparent;overflow:hidden}
 
@@ -58,26 +60,34 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--mo
 #panel{width:380px;background:var(--sur);border-left:2px solid var(--ink);display:flex;flex-direction:column;overflow:hidden;position:relative;min-height:0}
 
 @media(max-width:700px){
-  #app-body{flex-direction:column}
+  #app-body{flex-direction:column;position:relative}
   #map{
     width:100%;flex:none;
     height:33vh;
     transition:height 0.3s cubic-bezier(0.32,0.72,0,1);
-    min-height:0;
   }
-  #app-body.panel-open #map{height:28vh}
+  /* El panel ocupa desde justo debajo del mapa hasta el fondo */
   #panel{
-    position:fixed;bottom:0;left:0;right:0;width:100%;
-    height:67vh;
+    position:fixed;
+    top:calc(var(--chrome-h) + 33vh);
+    left:0;right:0;bottom:0;
+    width:100%;
     border-left:none;border-top:2px solid var(--ink);
+    /* Deslizar hacia abajo dejando solo el handle visible */
     transform:translateY(calc(100% - 52px));
-    transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);
+    transition:transform 0.3s cubic-bezier(0.32,0.72,0,1),top 0.3s cubic-bezier(0.32,0.72,0,1);
     z-index:500;
     padding-bottom:env(safe-area-inset-bottom,0px);
   }
   #panel.open{transform:translateY(0)}
-  .leaflet-bottom.leaflet-right{bottom:calc(67vh - 30px)!important}
-  #app-body.panel-open .leaflet-bottom.leaflet-right{bottom:calc(72vh - 30px)!important}
+  /* Con panel abierto el mapa se encoge */
+  #app-body.panel-open #map{height:25vh}
+  #app-body.panel-open #panel{top:calc(var(--chrome-h) + 25vh)}
+  /* Zoom: encima del handle */
+  .leaflet-bottom.leaflet-right{
+    bottom:58px!important;
+    right:10px!important;
+  }
 }
 #panel-handle{display:none;align-items:center;justify-content:center;padding:12px 0 7px;cursor:pointer;flex-shrink:0;border-bottom:1px solid var(--faint)}
 #panel-handle::before{content:'';width:36px;height:3px;background:var(--faint);border-radius:2px}
@@ -352,7 +362,15 @@ function markerIcon(color, type, sel) {
 }
 
 /* ── INIT MAP ── */
+function setChromeH(){
+  var h = document.querySelector('.mast').offsetHeight +
+          document.querySelector('.day-bar').offsetHeight;
+  document.documentElement.style.setProperty('--chrome-h', h+'px');
+}
+window.addEventListener('resize', setChromeH);
+
 function initMap() {
+  setChromeH();
   map = L.map('map',{zoomControl:false}).setView([45.7,10.8],7);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
   L.control.zoom({position:'bottomright'}).addTo(map);
@@ -587,9 +605,19 @@ function openDetail(dayIdx,pointIdx){
       var cfg=SEC_CONFIG[k];
       html+='<div class="sec-block" data-sec="'+k+'"><div class="sec-label"><i class="ph '+cfg.icon+'"></i>'+cfg.label+'</div><div class="sec-text">'+pt.sections[k].map(function(p){return '<p>'+p+'</p>';}).join('')+'</div></div>';
     });
-    if(pt.links&&pt.links.length){
+    var validLinks=(pt.links||[]).filter(function(l){
+      var lbl=l.label.toLowerCase();
+      // Excluir links de fotografías y links genéricos sin valor
+      var skipWords=['fotografía','fotografia','foto ','enlace de foto','imagen','photo','picture',
+                     'abrir fotografía','abrir fotografia','ver fotografía',
+                     'enlace de audio','enlace de vídeo','enlace de video',
+                     'portal oficial','turismo oficial'];
+      // Mantener si no contiene ninguna palabra de exclusión
+      return !skipWords.some(function(w){return lbl.includes(w);});
+    });
+    if(validLinks.length){
       html+='<div class="links-block"><div class="links-label">Enlaces oficiales</div>';
-      pt.links.forEach(function(l){html+='<a class="official-link" href="'+l.url+'" target="_blank" rel="noopener"><i class="ph ph-arrow-square-out"></i>'+l.label+'</a>';});
+      validLinks.forEach(function(l){html+='<a class="official-link" href="'+l.url+'" target="_blank" rel="noopener"><i class="ph ph-arrow-square-out"></i>'+l.label+'</a>';});
       html+='</div>';
     }
     content.innerHTML=html;
@@ -598,7 +626,7 @@ function openDetail(dayIdx,pointIdx){
   }
   buildAudioSections(pt.name,pt.sections);
   document.getElementById('detail').classList.add('open');
-  map.setView([pt.lat,pt.lng],Math.max(map.getZoom(),15));
+  map.setView([pt.lat,pt.lng],16);
 }
 
 function closeDetail(){
@@ -676,6 +704,7 @@ function setRate(v){
 /* ── SHEET ── */
 function toggleSheet(){sheetOpen?closeSheet():openSheet();}
 function openSheet(){
+  setChromeH();
   document.getElementById('panel').classList.add('open');
   document.getElementById('app-body').classList.add('panel-open');
   sheetOpen=true;
