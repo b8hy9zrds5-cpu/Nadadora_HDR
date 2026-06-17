@@ -67,6 +67,7 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--mo
     transform:translateY(calc(100% - 52px));
     transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);
     z-index:500;
+    padding-bottom:env(safe-area-inset-bottom,0px);
   }
   #panel.open{transform:translateY(0)}
 }
@@ -177,10 +178,23 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--mo
 .empty-icon i{font-size:18px;color:#fff}
 
 /* NAV BUTTONS — fuera del scroll, pegados abajo */
-#detail-nav{padding:10px 13px;border-top:1px solid var(--faint);display:flex;gap:7px;flex-shrink:0;background:var(--sur)}
-.dnav-btn{flex:1;padding:9px;border-radius:2px;border:1px solid var(--faint);background:var(--bg);color:var(--mid);font-size:10px;cursor:pointer;font-family:var(--mono);font-weight:300;letter-spacing:0.04em;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.15s;text-transform:uppercase}
+#detail-nav{
+  padding:10px 20px;
+  padding-bottom:max(10px,env(safe-area-inset-bottom,10px));
+  border-top:1px solid var(--faint);
+  display:flex;gap:10px;flex-shrink:0;background:var(--sur);
+}
+.dnav-btn{
+  flex:1;padding:11px 8px;border-radius:6px;
+  border:1px solid var(--faint);background:var(--bg);color:var(--mid);
+  font-size:10px;cursor:pointer;font-family:var(--mono);font-weight:300;
+  letter-spacing:0.04em;display:flex;align-items:center;justify-content:center;
+  gap:6px;transition:all 0.15s;text-transform:uppercase;
+  min-width:0;overflow:hidden;
+}
 .dnav-btn:hover{border-color:var(--acc);color:var(--acc)}
-.dnav-btn i{font-size:16px}
+.dnav-btn i{font-size:16px;flex-shrink:0}
+.dnav-btn span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dnav-btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .dnav-btn.primary:hover{background:var(--acc);border-color:var(--acc)}
 
@@ -196,6 +210,7 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--mo
 .map-sel{border:3px solid white!important;transform:scale(1.6)!important;animation:mpulse 1.8s ease-in-out infinite;z-index:9999}
 
 /* Leaflet overrides */
+.leaflet-control-zoom{margin-bottom:max(16px,env(safe-area-inset-bottom,16px))!important;margin-right:10px!important}
 .leaflet-control-zoom a{background:var(--sur)!important;color:var(--ink)!important;border-color:var(--faint)!important;font-family:var(--mono)!important}
 .leaflet-control-attribution{background:rgba(217,212,199,0.85)!important;color:var(--mid)!important;font-size:9px!important;font-family:var(--mono)!important}
 .leaflet-popup-content-wrapper{background:var(--sur)!important;border:1px solid var(--ink)!important;border-radius:2px!important;box-shadow:3px 3px 0 rgba(24,24,15,0.12)!important}
@@ -241,7 +256,6 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--mo
           <div id="detail-day-label"></div>
           <div id="detail-name"></div>
           <div id="detail-phonetic"></div>
-          <div id="detail-type-badge"></div>
         </div>
         <div id="detail-scroll">
           <div id="detail-meta"></div>
@@ -268,8 +282,8 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--mo
           <div id="detail-content"></div>
         </div>
         <div id="detail-nav">
-          <button class="dnav-btn" onclick="goToOnMap()"><i class="ph ph-map-pin"></i>Ver en mapa</button>
-          <button class="dnav-btn primary" onclick="openGMaps()"><i class="ph ph-navigation-arrow"></i>Navegar</button>
+          <button class="dnav-btn" onclick="goToOnMap()"><i class="ph ph-map-pin"></i><span>Ver en mapa</span></button>
+          <button class="dnav-btn primary" onclick="openGMaps()"><i class="ph ph-navigation-arrow"></i><span>Navegar</span></button>
         </div>
       </div>
     </div>
@@ -328,7 +342,7 @@ function markerIcon(color, type, sel) {
 
 /* ── INIT MAP ── */
 function initMap() {
-  map = L.map('map',{zoomControl:false}).setView([45.5,10.5],8);
+  map = L.map('map',{zoomControl:false}).setView([45.7,10.8],7);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
   L.control.zoom({position:'bottomright'}).addTo(map);
 
@@ -396,7 +410,7 @@ function filterDay(day,btn){
   if(day!=='all'){
     var dm=markers.filter(function(m){return m.dayIdx===parseInt(day);});
     if(dm.length){var g=L.featureGroup(dm.map(function(m){return m.marker;}));map.fitBounds(g.getBounds().pad(0.1),{maxZoom:14});}
-  } else { map.setView([45.5,10.5],8); }
+  } else { map.setView([45.7,10.8],7); }
 }
 
 function filterRestVenecia(btn){
@@ -530,8 +544,6 @@ function openDetail(dayIdx,pointIdx){
   document.getElementById('detail-phonetic').textContent=pt.fonetica?'/'+pt.fonetica+'/':'';
   var ph=TYPE_ICONS_PH[pt.type]||'ph-map-pin';
   var badgeColor = pt.type==='restaurante'&&dayIdx===5 ? REST_COLOR : day.color;
-  document.getElementById('detail-type-badge').innerHTML=
-    '<div class="badge-circle" style="background:'+badgeColor+'"><i class="ph '+ph+'"></i></div>'+(TYPE_LABELS[pt.type]||pt.type);
 
   var metaEl=document.getElementById('detail-meta');
   var meta=pt.meta||{};
