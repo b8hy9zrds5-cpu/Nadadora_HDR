@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Maleta · Norte de Italia · Jun 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --rust:    #C4623A;
+      --rust-lt: #E8856A;
+      --stone:   #F5F0E8;
+      --ink:     #1C1A17;
+      --muted:   #7A7268;
+      --line:    #DDD8CE;
+      --white:   #FFFFFF;
+      --done-bg: #EDF3EC;
+      --done-tx: #5A7A56;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--stone);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--ink);
+      padding: 2.5rem 2rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 18px,
+        rgba(255,255,255,0.025) 18px,
+        rgba(255,255,255,0.025) 19px
+      );
+    }
+    .header-eyebrow {
+      font-size: .7rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--rust-lt);
+      margin-bottom: .6rem;
+      position: relative;
+    }
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 6vw, 3.4rem);
+      color: var(--white);
+      line-height: 1.15;
+      position: relative;
+    }
+    header h1 span { color: var(--rust-lt); }
+    .header-sub {
+      margin-top: .8rem;
+      font-size: .82rem;
+      color: #A09890;
+      letter-spacing: .05em;
+      position: relative;
+    }
+
+    /* ── WEATHER BANNER ── */
+    .weather-banner {
+      background: linear-gradient(135deg, #2D4A3E 0%, #3D5A4A 100%);
+      color: var(--white);
+      padding: 1.2rem 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: .8rem 2rem;
+      align-items: center;
+      justify-content: center;
+    }
+    .weather-banner .w-label {
+      font-size: .65rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: #8FBFAA;
+      display: block;
+      margin-bottom: .15rem;
+    }
+    .weather-pill {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .weather-pill .icon { font-size: 1.3rem; }
+    .weather-pill .data { font-size: .88rem; line-height: 1.4; }
+    .weather-pill strong { font-weight: 600; }
+    .rain-warning {
+      background: rgba(196,98,58,.25);
+      border: 1px solid rgba(196,98,58,.5);
+      border-radius: 6px;
+      padding: .4rem .9rem;
+      font-size: .78rem;
+      color: #FFCAB0;
+    }
+
+    /* ── PROGRESS BAR ── */
+    .progress-wrap {
+      padding: 1.2rem 2rem .5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: .78rem;
+      color: var(--muted);
+      margin-bottom: .5rem;
+    }
+    .progress-header strong { color: var(--ink); font-weight: 600; }
+    .bar-bg {
+      background: var(--line);
+      border-radius: 99px;
+      height: 7px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      background: linear-gradient(90deg, var(--rust), var(--rust-lt));
+      height: 100%;
+      width: 0%;
+      border-radius: 99px;
+      transition: width .35s ease;
+    }
+
+    /* ── CONTROLS ── */
+    .controls {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: .6rem 2rem 1.2rem;
+      display: flex;
+      gap: .6rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      font-family: 'Inter', sans-serif;
+      font-size: .75rem;
+      font-weight: 500;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: .45rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 1.5px solid var(--line);
+      background: var(--white);
+      color: var(--muted);
+      transition: all .18s;
+    }
+    .btn:hover { border-color: var(--rust); color: var(--rust); }
+    .btn.primary { background: var(--rust); border-color: var(--rust); color: var(--white); }
+    .btn.primary:hover { background: #B0552F; }
+
+    /* ── MAIN LAYOUT ── */
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 2rem 4rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.4rem;
+    }
+    @media (max-width: 640px) { main { grid-template-columns: 1fr; } }
+
+    /* ── CATEGORY CARD ── */
+    .cat-card {
+      background: var(--white);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      transition: box-shadow .2s;
+    }
+    .cat-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.07); }
+    .cat-card.wide { grid-column: span 2; }
+    @media (max-width: 640px) { .cat-card.wide { grid-column: span 1; } }
+
+    .cat-header {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .9rem 1.2rem;
+      border-bottom: 1px solid var(--line);
+      cursor: pointer;
+      user-select: none;
+    }
+    .cat-icon { font-size: 1.3rem; flex-shrink: 0; }
+    .cat-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      flex: 1;
+    }
+    .cat-count {
+      font-size: .72rem;
+      font-weight: 600;
+      color: var(--muted);
+      background: var(--stone);
+      padding: .2rem .55rem;
+      border-radius: 99px;
+      white-space: nowrap;
+    }
+    .cat-count.done { background: var(--done-bg); color: var(--done-tx); }
+    .chevron {
+      font-size: .7rem;
+      color: var(--muted);
+      transition: transform .2s;
+    }
+    .cat-card.collapsed .chevron { transform: rotate(-90deg); }
+
+    .item-list {
+      list-style: none;
+      padding: .4rem 0;
+    }
+    .cat-card.collapsed .item-list { display: none; }
+
+    .item {
+      display: flex;
+      align-items: flex-start;
+      gap: .7rem;
+      padding: .55rem 1.2rem;
+      border-bottom: 1px solid var(--stone);
+      transition: background .15s;
+      cursor: pointer;
+    }
+    .item:last-child { border-bottom: none; }
+    .item:hover { background: #FAF8F4; }
+
+    .item input[type="checkbox"] { display: none; }
+
+    .checkmark {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--line);
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .18s;
+      font-size: .7rem;
+    }
+    .item.checked .checkmark {
+      background: var(--rust);
+      border-color: var(--rust);
+      color: white;
+    }
+    .item-text {
+      font-size: .88rem;
+      line-height: 1.5;
+      flex: 1;
+    }
+    .item.checked .item-text {
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+    .item-note {
+      font-size: .73rem;
+      color: var(--rust);
+      display: block;
+      margin-top: .1rem;
+    }
+    .item.checked .item-note { color: var(--muted); }
+    .badge {
+      font-size: .64rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: .15rem .45rem;
+      border-radius: 4px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      align-self: center;
+    }
+    .badge.esencial { background: #FDECEA; color: #B03A2E; }
+    .badge.venecia  { background: #EAF0FD; color: #2E5FB0; }
+    .badge.clima    { background: #EDF6F0; color: #2E7D50; }
+  </style>
+</head>
+<body>
+
+<header>
+  <p class="header-eyebrow">Viaje · 20 – 28 de junio de 2026</p>
+  <h1>Norte de <span>Italia</span></h1>
+  <p class="header-sub">Bérgamo · Como · Brescia · Verona · Padua · Venecia</p>
+</header>
+
+<div class="weather-banner">
+  <div class="weather-pill">
+    <span class="icon">🌡️</span>
+    <div class="data">
+      <span class="w-label">Temperaturas</span>
+      <strong>29 – 33 °C</strong> de día
+    </div>
+  </div>
+  <div class="weather-pill">
+    <span class="icon">☀️</span>
+    <div class="data">
+      <span class="w-label">Cielo</span>
+      Soleado con alguna nube
+    </div>
+  </div>
+  <div class="weather-pill">
+    <span class="icon">🌦️</span>
+    <div class="data">
+      <span class="w-label">Lluvia</span>
+      Posibilidad baja (5-20%)
+    </div>
+  </div>
+  <div class="rain-warning">☔ Lleva algo ligero por si cae un chubasco de verano</div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-header">
+    <span>Progreso</span>
+    <strong id="prog-text">0 / 0 ítems</strong>
+  </div>
+  <div class="bar-bg"><div class="bar-fill" id="bar"></div></div>
+</div>
+
+<div class="controls">
+  <button class="btn primary" onclick="markAll(true)">✓ Marcar todo</button>
+  <button class="btn" onclick="markAll(false)">↺ Desmarcar todo</button>
+  <button class="btn" onclick="toggleAll(false)">− Colapsar todo</button>
+  <button class="btn" onclick="toggleAll(true)">+ Expandir todo</button>
+</div>
+
+<main id="main">
+
+  <!-- DOCUMENTOS -->
+  <div class="cat-card" data-cat>
+    <div class="cat-header" onclick="toggleCat(this)">
+      <span class="cat-icon">🪪</span>
+      <span class="cat-title">Documentos</span>
+      <span class="cat-count"></span>
+      <span class="chevron">▾</span>
+    </div>
+    <ul class="item-list">
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">DNI o pasaporte en vigor <span class="item-note">Italia acepta DNI español</span></span><span class="badge esencial">Esencial</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Tarjeta sanitaria europea (TSE)</span><span class="badge esencial">Esencial</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Seguro de viaje (copia en papel y digital)</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Reservas de hotel / alojamiento impresas</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Tickets de tren / vaporetto Venecia</span><span class="badge venecia">Venecia</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Tarjeta de crédito / débito (Visa/MC)</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Algo de efectivo en euros</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Foto del pasaporte en el móvil (copia digital)</span></li>
+    </ul>
+  </div>
+
+  <!-- ROPA -->
+  <div class="cat-card" data-cat>
+    <div class="cat-header" onclick="toggleCat(this)">
+      <span class="cat-icon">👕</span>
+      <span class="cat-title">Ropa</span>
+      <span class="cat-count"></span>
+      <span class="chevron">▾</span>
+    </div>
+    <ul class="item-list">
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Camisetas de manga corta (6-7)<span class="item-note">Calor intenso: 29-33 °C</span></span><span class="badge clima">Clima</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Polo o camisa ligera (2)<span class="item-note">Para cenas o iglesias con código</span></span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Pantalón largo fino (1-2)<span class="item-note">Obligatorio en iglesias y basílicas</span></span><span class="badge esencial">Esencial</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Shorts / bermudas (3)</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Ropa interior (7-8 mudas)</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Calcetines (6-7 pares)</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Bañador <span class="item-note">Lago de Como / piscina hotel</span></span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Chaqueta fina o cortavientos ligero<span class="item-note">Para posible chubasco o A/C agresivo</span></span><span class="badge clima">Clima</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Pijama / ropa de dormir</span></li>
+    </ul>
+  </div>
+
+  <!-- CALZADO -->
+  <div class="cat-card" data-cat>
+    <div class="cat-header" onclick="toggleCat(this)">
+      <span class="cat-icon">👟</span>
+      <span class="cat-title">Calzado</span>
+      <span class="cat-count"></span>
+      <span class="chevron">▾</span>
+    </div>
+    <ul class="item-list">
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Zapatillas cómodas para caminar<span class="item-note">Muchos kilómetros a pie cada día</span></span><span class="badge esencial">Esencial</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Sandalias o chanclas<span class="item-note">Venecia: evita suelas de goma gruesa en puentes mojados</span></span><span class="badge venecia">Venecia</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Zapatos o náuticos para cenar<span class="item-note">Opcionales pero útiles para restaurantes</span></span></li>
+    </ul>
+  </div>
+
+  <!-- HIGIENE Y SALUD -->
+  <div class="cat-card" data-cat>
+    <div class="cat-header" onclick="toggleCat(this)">
+      <span class="cat-icon">🪥</span>
+      <span class="cat-title">Higiene y salud</span>
+      <span class="cat-count"></span>
+      <span class="chevron">▾</span>
+    </div>
+    <ul class="item-list">
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Protector solar SPF 50+<span class="item-note">Sol fuerte en verano italiano</span></span><span class="badge clima">Clima</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Cepillo y pasta de dientes</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Desodorante</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Champú y gel (formato viaje ≤100 ml)</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Maquinilla de afeitar / afeitadora</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Crema hidratante facial</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Repelente de mosquitos<span class="item-note">Zonas lacustres y Venecia por la noche</span></span><span class="badge esencial">Esencial</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Antihistamínico (pastillas)</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Ibuprofeno / paracetamol</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Tiritas y antiséptico en gel</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Medicación personal habitual</span><span class="badge esencial">Esencial</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Sobres rehidratantes<span class="item-note">Calor extremo: riesgo de deshidratación</span></span><span class="badge clima">Clima</span></li>
+    </ul>
+  </div>
+
+  <!-- TECNOLOGÍA -->
+  <div class="cat-card" data-cat>
+    <div class="cat-header" onclick="toggleCat(this)">
+      <span class="cat-icon">📱</span>
+      <span class="cat-title">Tecnología</span>
+      <span class="cat-count"></span>
+      <span class="chevron">▾</span>
+    </div>
+    <ul class="item-list">
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Móvil cargado + cargador</span><span class="badge esencial">Esencial</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Batería externa (powerbank)<span class="item-note">Días de mucho turismo agotan la batería</span></span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Adaptador de enchufe tipo L (italiano)<span class="item-note">Distinto al español tipo F</span></span><span class="badge esencial">Esencial</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Cámara de fotos + tarjetas SD</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Auriculares</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Descargadas: Google Maps offline (todas las ciudades)</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">App Trenitalia / Italo para trenes</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">App Actv Venezia (vaporetto)</span><span class="badge venecia">Venecia</span></li>
+    </ul>
+  </div>
+
+  <!-- ACCESORIOS -->
+  <div class="cat-card" data-cat>
+    <div class="cat-header" onclick="toggleCat(this)">
+      <span class="cat-icon">🎒</span>
+      <span class="cat-title">Accesorios</span>
+      <span class="cat-count"></span>
+      <span class="chevron">▾</span>
+    </div>
+    <ul class="item-list">
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Gafas de sol<span class="item-note">Imprescindible con 33 °C y sol fuerte</span></span><span class="badge clima">Clima</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Sombrero o gorra</span><span class="badge clima">Clima</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Mochila de día (20-25 L)</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Paraguas plegable compacto<span class="item-note">Lluvia posible 5-20%: mejor prevenir</span></span><span class="badge clima">Clima</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Botella de agua reutilizable<span class="item-note">Fuentes de agua potable por toda Italia</span></span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Candado para maleta / mochila</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Riñonera o bolso antirrobo<span class="item-note">Zonas turísticas: ojo con carteristas</span></span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Bolsas zip reutilizables (organización)</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Toalla de microfibra<span class="item-note">Para lago de Como o playa</span></span></li>
+    </ul>
+  </div>
+
+  <!-- VENECIA ESPECÍFICO -->
+  <div class="cat-card wide" data-cat>
+    <div class="cat-header" onclick="toggleCat(this)">
+      <span class="cat-icon">🚤</span>
+      <span class="cat-title">Específico para Venecia (3 noches)</span>
+      <span class="cat-count"></span>
+      <span class="chevron">▾</span>
+    </div>
+    <ul class="item-list">
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Pase de vaporetto de varios días o app ACTV cargada<span class="item-note">Mejor comprarlo con antelación online</span></span><span class="badge esencial">Esencial</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Calzado con suela antideslizante<span class="item-note">Puentes y barcas mojadas son resbaladizos</span></span><span class="badge venecia">Venecia</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Reserva Basílica San Marcos (entrada gratuita pero necesita cita online)</span><span class="badge venecia">Venecia</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Reserva Palacio Ducal (evita colas enormes)</span><span class="badge venecia">Venecia</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Nota del alojamiento con dirección exacta en vaporetto<span class="item-note">Las direcciones venecianas confunden mucho</span></span><span class="badge esencial">Esencial</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Excursión a Burano / Murano apuntada (salidas desde Fondamente Nove)</span><span class="badge venecia">Venecia</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Efectivo extra: muchos bares pequeños no aceptan tarjeta</span><span class="badge venecia">Venecia</span></li>
+    </ul>
+  </div>
+
+  <!-- ANTES DE SALIR -->
+  <div class="cat-card wide" data-cat>
+    <div class="cat-header" onclick="toggleCat(this)">
+      <span class="cat-icon">🏠</span>
+      <span class="cat-title">Antes de salir de casa</span>
+      <span class="cat-count"></span>
+      <span class="chevron">▾</span>
+    </div>
+    <ul class="item-list">
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Avisar al banco de que viajas a Italia (evitar bloqueos)</span><span class="badge esencial">Esencial</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Comprobar roaming / datos internacionales (UE: sin coste extra)</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Cerrar gas, agua y persianas</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Programar calefacción/AC en mínimo</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Dejar llave a alguien de confianza</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Cargar todos los dispositivos la noche anterior</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Revisar el peso de la maleta (23 kg facturada / 10 kg cabina)</span></li>
+    </ul>
+  </div>
+
+</main>
+
+<script>
+  function toggle(item) {
+    item.classList.toggle('checked');
+    if (item.querySelector('input[type="checkbox"]')) {
+      const cb = item.querySelector('input[type="checkbox"]');
+      cb.checked = item.classList.contains('checked');
+    }
+    updateCatCount(item.closest('.cat-card'));
+    updateProgress();
+  }
+
+  function toggleCat(header) {
+    header.closest('.cat-card').classList.toggle('collapsed');
+  }
+
+  function updateCatCount(card) {
+    const items = card.querySelectorAll('.item');
+    const done  = card.querySelectorAll('.item.checked');
+    const badge = card.querySelector('.cat-count');
+    badge.textContent = done.length + ' / ' + items.length;
+    badge.classList.toggle('done', done.length === items.length && items.length > 0);
+  }
+
+  function updateProgress() {
+    const all  = document.querySelectorAll('.item');
+    const done = document.querySelectorAll('.item.checked');
+    const pct  = all.length ? (done.length / all.length * 100) : 0;
+    document.getElementById('bar').style.width = pct + '%';
+    document.getElementById('prog-text').textContent = done.length + ' / ' + all.length + ' ítems';
+  }
+
+  function markAll(state) {
+    document.querySelectorAll('.item').forEach(item => {
+      if (state) item.classList.add('checked');
+      else item.classList.remove('checked');
+    });
+    document.querySelectorAll('.cat-card').forEach(card => updateCatCount(card));
+    updateProgress();
+  }
+
+  function toggleAll(expand) {
+    document.querySelectorAll('.cat-card').forEach(card => {
+      if (expand) card.classList.remove('collapsed');
+      else card.classList.add('collapsed');
+    });
+  }
+
+  // Init
+  document.querySelectorAll('.cat-card').forEach(card => updateCatCount(card));
+  updateProgress();
+</script>
+</body>
+</html>
