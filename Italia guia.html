@@ -687,8 +687,24 @@ function filterDay(day,btn){
   document.getElementById('point-list').scrollTop=0;
   if(day!=='all'){
     var dm=markers.filter(function(m){return m.dayIdx===parseInt(day);});
-    if(dm.length){var g=L.featureGroup(dm.map(function(m){return m.marker;}));map.fitBounds(g.getBounds(),{paddingTopLeft:[28,28],paddingBottomRight:[28,40],maxZoom:15});}
-  } else { map.setView([45.7,10.8],7); }
+    if(dm.length){var g=L.featureGroup(dm.map(function(m){return m.marker;}));(function(){
+        var mapEl=document.getElementById('map');
+        var mh=mapEl.offsetHeight, mw=mapEl.offsetWidth;
+        var padV=Math.round(mh*0.12), padH=Math.round(mw*0.08);
+        var padBottom=Math.round(mh*0.18);
+        map.fitBounds(g.getBounds(),{paddingTopLeft:[padH,padV],paddingBottomRight:[padH,padBottom],maxZoom:15,animate:false});
+      })();}
+  } else {
+    var allM=markers.filter(function(m){return m.point.lat;});
+    if(allM.length){
+      var ga=L.featureGroup(allM.map(function(m){return m.marker;}));
+      var mapEl=document.getElementById('map');
+      var mh=mapEl.offsetHeight, mw=mapEl.offsetWidth;
+      var padV=Math.round(mh*0.10), padH=Math.round(mw*0.06);
+      var padBottom=Math.round(mh*0.16);
+      map.fitBounds(ga.getBounds(),{paddingTopLeft:[padH,padV],paddingBottomRight:[padH,padBottom],maxZoom:8,animate:false});
+    } else { map.setView([45.7,10.8],7); }
+  }
 }
 
 function filterRestVenecia(btn){
@@ -698,7 +714,13 @@ function filterRestVenecia(btn){
   updateVis(); renderList();
   // Zoom a Venecia
   var vm=markers.filter(function(m){return m.dayIdx===5&&m.point.type==='restaurante';});
-  if(vm.length){var g=L.featureGroup(vm.map(function(m){return m.marker;}));map.fitBounds(g.getBounds(),{paddingTopLeft:[24,24],paddingBottomRight:[24,36],maxZoom:13});}
+  if(vm.length){var g=L.featureGroup(vm.map(function(m){return m.marker;}));(function(){
+        var mapEl=document.getElementById('map');
+        var mh=mapEl.offsetHeight, mw=mapEl.offsetWidth;
+        var padV=Math.round(mh*0.12), padH=Math.round(mw*0.08);
+        var padBottom=Math.round(mh*0.18);
+        map.fitBounds(g.getBounds(),{paddingTopLeft:[padH,padV],paddingBottomRight:[padH,padBottom],maxZoom:15,animate:false});
+      })();}
 }
 
 function updateVis(){
