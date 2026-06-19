@@ -310,14 +310,11 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--mo
   background:var(--sur);
   display:none;flex-direction:column;
   overscroll-behavior:contain;
+  will-change:transform;
 }
-#emerg-panel::before{
-  content:'';display:block;
-  height:env(safe-area-inset-top,0px);
-  background:#c0392b;
-  flex-shrink:0;
-}
+
 #emerg-panel.open{display:flex}
+#emerg-panel.closing{opacity:0;pointer-events:none}
 #emerg-header{
   display:flex;align-items:center;gap:10px;
   padding:calc(env(safe-area-inset-top,0px) + 12px) 14px 10px;
@@ -399,9 +396,11 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--mo
   display:none;flex-direction:column;
   overscroll-behavior:contain;
   background:#f5f4f0;
+  will-change:transform;
 }
 
 #vap-panel.open{display:flex}
+#vap-panel.closing{opacity:0;pointer-events:none}
 #vap-panel-header{
   display:flex;align-items:center;gap:10px;
   padding:calc(env(safe-area-inset-top,0px) + 12px) 16px 10px;
@@ -1274,7 +1273,10 @@ function openVap(){
   if(b) b.classList.add('vap-active');
 }
 function closeVap(){
-  document.getElementById('vap-panel').classList.remove('open');
+  var panel=document.getElementById('vap-panel');
+  panel.classList.remove('open');
+  panel.classList.add('closing');
+  setTimeout(function(){ panel.classList.remove('closing'); }, 50);
   document.body.style.overflow='';
   setThemeColor(null);
   var b=document.querySelector('.day-pill-vap');
@@ -1414,7 +1416,10 @@ function openEmerg(){
 }
 function closeEmerg(){
   emergStop();
-  document.getElementById('emerg-panel').classList.remove('open');
+  var panel=document.getElementById('emerg-panel');
+  panel.classList.remove('open');
+  panel.classList.add('closing');
+  setTimeout(function(){ panel.classList.remove('closing'); }, 50);
   document.body.style.overflow='';
   setThemeColor(null);
 }
@@ -1681,7 +1686,10 @@ function openEmerg(){
 }
 function closeEmerg(){
   emergStop();
-  document.getElementById('emerg-panel').classList.remove('open');
+  var panel=document.getElementById('emerg-panel');
+  panel.classList.remove('open');
+  panel.classList.add('closing');
+  setTimeout(function(){ panel.classList.remove('closing'); }, 50);
   document.body.style.overflow='';
   setThemeColor(null);
 }
