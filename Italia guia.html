@@ -1274,13 +1274,19 @@ function openVap(){
 }
 function closeVap(){
   var panel=document.getElementById('vap-panel');
-  panel.classList.remove('open');
-  panel.classList.add('closing');
-  setTimeout(function(){ panel.classList.remove('closing'); }, 50);
-  document.body.style.overflow='';
-  setThemeColor(null);
-  var b=document.querySelector('.day-pill-vap');
-  if(b) b.classList.remove('vap-active');
+  var hdr=document.getElementById('vap-panel-header');
+  hdr.style.background='transparent';
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      panel.classList.remove('open');
+      panel.classList.remove('closing');
+      hdr.style.background='';
+      document.body.style.overflow='';
+      setThemeColor(null);
+      var b=document.querySelector('.day-pill-vap');
+      if(b) b.classList.remove('vap-active');
+    });
+  });
 }
 /* ── FIN VAPORETTO ── */
 
@@ -1417,11 +1423,19 @@ function openEmerg(){
 function closeEmerg(){
   emergStop();
   var panel=document.getElementById('emerg-panel');
-  panel.classList.remove('open');
-  panel.classList.add('closing');
-  setTimeout(function(){ panel.classList.remove('closing'); }, 50);
-  document.body.style.overflow='';
-  setThemeColor(null);
+  var hdr=document.getElementById('emerg-header');
+  hdr.style.background='transparent';
+  hdr.style.borderBottomColor='transparent';
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      panel.classList.remove('open');
+      panel.classList.remove('closing');
+      hdr.style.background='';
+      hdr.style.borderBottomColor='';
+      document.body.style.overflow='';
+      setThemeColor(null);
+    });
+  });
 }
 var emergUtterance=null;
 function emergStop(){
@@ -1687,11 +1701,19 @@ function openEmerg(){
 function closeEmerg(){
   emergStop();
   var panel=document.getElementById('emerg-panel');
-  panel.classList.remove('open');
-  panel.classList.add('closing');
-  setTimeout(function(){ panel.classList.remove('closing'); }, 50);
-  document.body.style.overflow='';
-  setThemeColor(null);
+  var hdr=document.getElementById('emerg-header');
+  hdr.style.background='transparent';
+  hdr.style.borderBottomColor='transparent';
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      panel.classList.remove('open');
+      panel.classList.remove('closing');
+      hdr.style.background='';
+      hdr.style.borderBottomColor='';
+      document.body.style.overflow='';
+      setThemeColor(null);
+    });
+  });
 }
 var emergUtterance=null;
 function emergStop(){
