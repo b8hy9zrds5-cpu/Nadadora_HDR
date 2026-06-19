@@ -320,7 +320,7 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--mo
 #emerg-panel.open{display:flex}
 #emerg-header{
   display:flex;align-items:center;gap:10px;
-  padding:12px 14px 10px;
+  padding:calc(env(safe-area-inset-top,0px) + 12px) 14px 10px;
   border-bottom:2px solid #c0392b;
   flex-shrink:0;background:#c0392b;
 }
@@ -400,15 +400,11 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--mo
   overscroll-behavior:contain;
   background:#f5f4f0;
 }
-#vap-panel::before{
-  content:'';display:block;
-  height:env(safe-area-inset-top,0px);
-  background:#1a1a1a;flex-shrink:0;
-}
+
 #vap-panel.open{display:flex}
 #vap-panel-header{
   display:flex;align-items:center;gap:10px;
-  padding:12px 16px 10px;
+  padding:calc(env(safe-area-inset-top,0px) + 12px) 16px 10px;
   background:#1a1a1a;
   flex-shrink:0;
 }
@@ -1270,14 +1266,17 @@ function openVap(){
   var panel=document.getElementById('vap-panel');
   panel.classList.add('open');
   document.body.style.overflow='hidden';
+  setThemeColor('#1a1a1a');
   if(!document.getElementById('vap-from').options.length){
     vap_buildSelects(); vap_setNow();
   }
-  document.querySelector('.day-pill-vap').classList.add('vap-active');
+  var b=document.querySelector('.day-pill-vap');
+  if(b) b.classList.add('vap-active');
 }
 function closeVap(){
   document.getElementById('vap-panel').classList.remove('open');
   document.body.style.overflow='';
+  setThemeColor(null);
   var b=document.querySelector('.day-pill-vap');
   if(b) b.classList.remove('vap-active');
 }
@@ -1402,16 +1401,22 @@ function closeLightbox(){
 }
 // Cerrar lightbox con Escape
 /* ── EMERGENCIAS ── */
+function setThemeColor(color){
+  var tc=document.querySelector('meta[name="theme-color"]');
+  if(!tc) return;
+  tc.content = color || getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#d4cfc4';
+}
 function openEmerg(){
   buildEmergPanel();
   document.getElementById('emerg-panel').classList.add('open');
   document.body.style.overflow='hidden';
+  setThemeColor('#c0392b');
 }
 function closeEmerg(){
   emergStop();
-  var panel=document.getElementById('emerg-panel');
-  panel.classList.remove('open');
+  document.getElementById('emerg-panel').classList.remove('open');
   document.body.style.overflow='';
+  setThemeColor(null);
 }
 var emergUtterance=null;
 function emergStop(){
@@ -1663,16 +1668,22 @@ function stopLocate(){
 }
 
 /* ── EMERGENCIAS ── */
+function setThemeColor(color){
+  var tc=document.querySelector('meta[name="theme-color"]');
+  if(!tc) return;
+  tc.content = color || getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#d4cfc4';
+}
 function openEmerg(){
   buildEmergPanel();
   document.getElementById('emerg-panel').classList.add('open');
   document.body.style.overflow='hidden';
+  setThemeColor('#c0392b');
 }
 function closeEmerg(){
   emergStop();
-  var panel=document.getElementById('emerg-panel');
-  panel.classList.remove('open');
+  document.getElementById('emerg-panel').classList.remove('open');
   document.body.style.overflow='';
+  setThemeColor(null);
 }
 var emergUtterance=null;
 function emergStop(){
