@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Maleta · Norte de Italia · Jun 2026</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -26,6 +27,8 @@
       color: var(--ink);
       min-height: 100vh;
     }
+
+    i.ph, i.ph-fill { line-height: 1; }
 
     /* ── HEADER ── */
     header {
@@ -95,7 +98,7 @@
       align-items: center;
       gap: .5rem;
     }
-    .weather-pill .icon { font-size: 1.3rem; }
+    .weather-pill .icon { font-size: 1.3rem; color: #C9E4D6; }
     .weather-pill .data { font-size: .88rem; line-height: 1.4; }
     .weather-pill strong { font-weight: 600; }
     .rain-warning {
@@ -105,6 +108,9 @@
       padding: .4rem .9rem;
       font-size: .78rem;
       color: #FFCAB0;
+      display: flex;
+      align-items: center;
+      gap: .4rem;
     }
 
     /* ── PROGRESS BAR ── */
@@ -157,6 +163,9 @@
       background: var(--white);
       color: var(--muted);
       transition: all .18s;
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
     }
     .btn:hover { border-color: var(--rust); color: var(--rust); }
     .btn.primary { background: var(--rust); border-color: var(--rust); color: var(--white); }
@@ -194,7 +203,14 @@
       cursor: pointer;
       user-select: none;
     }
-    .cat-icon { font-size: 1.3rem; flex-shrink: 0; }
+    .cat-icon {
+      font-size: 1.25rem;
+      flex-shrink: 0;
+      color: var(--rust);
+      width: 1.4rem;
+      display: flex;
+      justify-content: center;
+    }
     .cat-title {
       font-family: 'Playfair Display', serif;
       font-size: 1.05rem;
@@ -212,9 +228,10 @@
     }
     .cat-count.done { background: var(--done-bg); color: var(--done-tx); }
     .chevron {
-      font-size: .7rem;
+      font-size: .85rem;
       color: var(--muted);
       transition: transform .2s;
+      display: flex;
     }
     .cat-card.collapsed .chevron { transform: rotate(-90deg); }
 
@@ -249,7 +266,7 @@
       align-items: center;
       justify-content: center;
       transition: all .18s;
-      font-size: .7rem;
+      font-size: .65rem;
     }
     .item.checked .checkmark {
       background: var(--rust);
@@ -286,6 +303,7 @@
     .badge.esencial { background: #FDECEA; color: #B03A2E; }
     .badge.venecia  { background: #EAF0FD; color: #2E5FB0; }
     .badge.clima    { background: #EDF6F0; color: #2E7D50; }
+    .badge.medico   { background: #F3EAFB; color: #6B3FA0; }
   </style>
 </head>
 <body>
@@ -298,27 +316,27 @@
 
 <div class="weather-banner">
   <div class="weather-pill">
-    <span class="icon">🌡️</span>
+    <i class="ph ph-thermometer-simple icon"></i>
     <div class="data">
       <span class="w-label">Temperaturas</span>
       <strong>29 – 33 °C</strong> de día
     </div>
   </div>
   <div class="weather-pill">
-    <span class="icon">☀️</span>
+    <i class="ph ph-sun icon"></i>
     <div class="data">
       <span class="w-label">Cielo</span>
-      Soleado con alguna nube
+      Soleado, alguna nube
     </div>
   </div>
   <div class="weather-pill">
-    <span class="icon">🌦️</span>
+    <i class="ph ph-cloud-rain icon"></i>
     <div class="data">
       <span class="w-label">Lluvia</span>
-      Posibilidad baja (5-20%)
+      5-15%, sube a 35% el domingo 21 en Bérgamo
     </div>
   </div>
-  <div class="rain-warning">☔ Lleva algo ligero por si cae un chubasco de verano</div>
+  <div class="rain-warning"><i class="ph ph-umbrella"></i> El domingo 21 sube el riesgo de lluvia — el paraguas se queda en la maleta</div>
 </div>
 
 <div class="progress-wrap">
@@ -330,10 +348,10 @@
 </div>
 
 <div class="controls">
-  <button class="btn primary" onclick="markAll(true)">✓ Marcar todo</button>
-  <button class="btn" onclick="markAll(false)">↺ Desmarcar todo</button>
-  <button class="btn" onclick="toggleAll(false)">− Colapsar todo</button>
-  <button class="btn" onclick="toggleAll(true)">+ Expandir todo</button>
+  <button class="btn primary" onclick="markAll(true)"><i class="ph ph-check"></i> Marcar todo</button>
+  <button class="btn" onclick="markAll(false)"><i class="ph ph-arrow-counter-clockwise"></i> Desmarcar todo</button>
+  <button class="btn" onclick="toggleAll(false)"><i class="ph ph-minus"></i> Colapsar todo</button>
+  <button class="btn" onclick="toggleAll(true)"><i class="ph ph-plus"></i> Expandir todo</button>
 </div>
 
 <main id="main">
@@ -341,14 +359,13 @@
   <!-- DOCUMENTOS -->
   <div class="cat-card" data-cat>
     <div class="cat-header" onclick="toggleCat(this)">
-      <span class="cat-icon">🪪</span>
+      <span class="cat-icon"><i class="ph ph-identification-card"></i></span>
       <span class="cat-title">Documentos</span>
       <span class="cat-count"></span>
-      <span class="chevron">▾</span>
+      <span class="chevron"><i class="ph ph-caret-down"></i></span>
     </div>
     <ul class="item-list">
       <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">DNI o pasaporte en vigor <span class="item-note">Italia acepta DNI español</span></span><span class="badge esencial">Esencial</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Tarjeta sanitaria europea (TSE)</span><span class="badge esencial">Esencial</span></li>
       <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Seguro de viaje (copia en papel y digital)</span></li>
       <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Reservas de hotel / alojamiento impresas</span></li>
       <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Tickets de tren / vaporetto Venecia</span><span class="badge venecia">Venecia</span></li>
@@ -361,20 +378,24 @@
   <!-- ROPA -->
   <div class="cat-card" data-cat>
     <div class="cat-header" onclick="toggleCat(this)">
-      <span class="cat-icon">👕</span>
+      <span class="cat-icon"><i class="ph ph-t-shirt"></i></span>
       <span class="cat-title">Ropa</span>
       <span class="cat-count"></span>
-      <span class="chevron">▾</span>
+      <span class="chevron"><i class="ph ph-caret-down"></i></span>
     </div>
     <ul class="item-list">
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Camisetas de manga corta (6-7)<span class="item-note">Calor intenso: 29-33 °C</span></span><span class="badge clima">Clima</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Polo o camisa ligera (2)<span class="item-note">Para cenas o iglesias con código</span></span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Pantalón largo fino (1-2)<span class="item-note">Obligatorio en iglesias y basílicas</span></span><span class="badge esencial">Esencial</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Shorts / bermudas (3)</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Ropa interior (7-8 mudas)</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Calcetines (6-7 pares)</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">9 camisetas <span class="item-note">5 blancas, 1 rosa, 1 gris, 1 negra, 1 azul, 1 verde oscuro</span></span><span class="badge clima">Clima</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">6 pantalones cortos <span class="item-note">Gris claro, verde, negro, azul deportivo, azul, marrón</span></span><span class="badge clima">Clima</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">3 pantalones largos <span class="item-note">Azul con cordones y puños, vaquero nudie, verde COS</span></span><span class="badge esencial">Esencial</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">9 mudas de ropa interior</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">3 pares de calcetines</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Jersey azul fino</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Sudadera azul fina</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Sudadera gris</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Sudadera azul con coderas</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Sudadera granate</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Chaqueta fina<span class="item-note">Para posible chubasco o A/C agresivo</span></span><span class="badge clima">Clima</span></li>
       <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Bañador <span class="item-note">Lago de Como / piscina hotel</span></span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Chaqueta fina o cortavientos ligero<span class="item-note">Para posible chubasco o A/C agresivo</span></span><span class="badge clima">Clima</span></li>
       <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Pijama / ropa de dormir</span></li>
     </ul>
   </div>
@@ -382,118 +403,103 @@
   <!-- CALZADO -->
   <div class="cat-card" data-cat>
     <div class="cat-header" onclick="toggleCat(this)">
-      <span class="cat-icon">👟</span>
+      <span class="cat-icon"><i class="ph ph-sneaker"></i></span>
       <span class="cat-title">Calzado</span>
       <span class="cat-count"></span>
-      <span class="chevron">▾</span>
+      <span class="chevron"><i class="ph ph-caret-down"></i></span>
     </div>
     <ul class="item-list">
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Zapatillas cómodas para caminar<span class="item-note">Muchos kilómetros a pie cada día</span></span><span class="badge esencial">Esencial</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Sandalias o chanclas<span class="item-note">Venecia: evita suelas de goma gruesa en puentes mojados</span></span><span class="badge venecia">Venecia</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Zapatos o náuticos para cenar<span class="item-note">Opcionales pero útiles para restaurantes</span></span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Tenis<span class="item-note">Muchos kilómetros a pie cada día</span></span><span class="badge esencial">Esencial</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Sandalias<span class="item-note">Venecia: cuidado con suelas resbaladizas en puentes mojados</span></span><span class="badge venecia">Venecia</span></li>
     </ul>
   </div>
 
-  <!-- HIGIENE Y SALUD -->
+  <!-- HIGIENE -->
   <div class="cat-card" data-cat>
     <div class="cat-header" onclick="toggleCat(this)">
-      <span class="cat-icon">🪥</span>
-      <span class="cat-title">Higiene y salud</span>
+      <span class="cat-icon"><i class="ph ph-shower"></i></span>
+      <span class="cat-title">Higiene</span>
       <span class="cat-count"></span>
-      <span class="chevron">▾</span>
+      <span class="chevron"><i class="ph ph-caret-down"></i></span>
     </div>
     <ul class="item-list">
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Protector solar SPF 50+<span class="item-note">Sol fuerte en verano italiano</span></span><span class="badge clima">Clima</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Cepillo y pasta de dientes</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Cepillo de dientes</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Pasta de dientes</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Interdentales</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Limpiador lingual</span></li>
       <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Desodorante</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Champú y gel (formato viaje ≤100 ml)</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Maquinilla de afeitar / afeitadora</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Crema hidratante facial</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Repelente de mosquitos<span class="item-note">Zonas lacustres y Venecia por la noche</span></span><span class="badge esencial">Esencial</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Antihistamínico (pastillas)</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Ibuprofeno / paracetamol</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Tiritas y antiséptico en gel</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Medicación personal habitual</span><span class="badge esencial">Esencial</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Sobres rehidratantes<span class="item-note">Calor extremo: riesgo de deshidratación</span></span><span class="badge clima">Clima</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Colonia</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Crema hidratante cara<span class="item-note">Sol fuerte en verano italiano</span></span><span class="badge clima">Clima</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Crema hidratante ojos</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Letibalm</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Bastoncillos</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Tapones de oídos</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Pañuelos de papel</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Kit de manicura de viaje</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Gafas de leer</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Toalla de microfibra<span class="item-note">Para lago de Como o playa</span></span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Bomba de vacío<span class="item-note">Para comprimir la ropa en la maleta</span></span></li>
+    </ul>
+  </div>
+
+  <!-- SALUD Y MEDICACIÓN -->
+  <div class="cat-card" data-cat>
+    <div class="cat-header" onclick="toggleCat(this)">
+      <span class="cat-icon"><i class="ph ph-first-aid-kit"></i></span>
+      <span class="cat-title">Salud y medicación</span>
+      <span class="cat-count"></span>
+      <span class="chevron"><i class="ph ph-caret-down"></i></span>
+    </div>
+    <ul class="item-list">
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Adrenalina Jext<span class="item-note">Llevar siempre encima, no en la maleta facturada</span></span><span class="badge medico">Médico</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Prednisona</span><span class="badge medico">Médico</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Bilastina</span><span class="badge medico">Médico</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Tebarat</span><span class="badge medico">Médico</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Diclofenaco</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Paracetamol</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Tiritas</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Pastillero</span></li>
     </ul>
   </div>
 
   <!-- TECNOLOGÍA -->
   <div class="cat-card" data-cat>
     <div class="cat-header" onclick="toggleCat(this)">
-      <span class="cat-icon">📱</span>
+      <span class="cat-icon"><i class="ph ph-device-mobile"></i></span>
       <span class="cat-title">Tecnología</span>
       <span class="cat-count"></span>
-      <span class="chevron">▾</span>
+      <span class="chevron"><i class="ph ph-caret-down"></i></span>
     </div>
     <ul class="item-list">
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Móvil cargado + cargador</span><span class="badge esencial">Esencial</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Batería externa (powerbank)<span class="item-note">Días de mucho turismo agotan la batería</span></span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Adaptador de enchufe tipo L (italiano)<span class="item-note">Distinto al español tipo F</span></span><span class="badge esencial">Esencial</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Cámara de fotos + tarjetas SD</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Cargador de móvil ultrarrápido</span><span class="badge esencial">Esencial</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Cargador normal</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Batería externa (powerbank)</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Cable para la batería</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">2 AirTags</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Cámara de fotos</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Objetivo</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Cargador de baterías de la cámara</span></li>
       <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Auriculares</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Descargadas: Google Maps offline (todas las ciudades)</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">App Trenitalia / Italo para trenes</span></li>
+      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Descargado: Google Maps offline (todas las ciudades)</span></li>
       <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">App Actv Venezia (vaporetto)</span><span class="badge venecia">Venecia</span></li>
-    </ul>
-  </div>
-
-  <!-- ACCESORIOS -->
-  <div class="cat-card" data-cat>
-    <div class="cat-header" onclick="toggleCat(this)">
-      <span class="cat-icon">🎒</span>
-      <span class="cat-title">Accesorios</span>
-      <span class="cat-count"></span>
-      <span class="chevron">▾</span>
-    </div>
-    <ul class="item-list">
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Gafas de sol<span class="item-note">Imprescindible con 33 °C y sol fuerte</span></span><span class="badge clima">Clima</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Sombrero o gorra</span><span class="badge clima">Clima</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Mochila de día (20-25 L)</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Paraguas plegable compacto<span class="item-note">Lluvia posible 5-20%: mejor prevenir</span></span><span class="badge clima">Clima</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Botella de agua reutilizable<span class="item-note">Fuentes de agua potable por toda Italia</span></span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Candado para maleta / mochila</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Riñonera o bolso antirrobo<span class="item-note">Zonas turísticas: ojo con carteristas</span></span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Bolsas zip reutilizables (organización)</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Toalla de microfibra<span class="item-note">Para lago de Como o playa</span></span></li>
     </ul>
   </div>
 
   <!-- VENECIA ESPECÍFICO -->
   <div class="cat-card wide" data-cat>
     <div class="cat-header" onclick="toggleCat(this)">
-      <span class="cat-icon">🚤</span>
+      <span class="cat-icon"><i class="ph ph-boat"></i></span>
       <span class="cat-title">Específico para Venecia (3 noches)</span>
       <span class="cat-count"></span>
-      <span class="chevron">▾</span>
+      <span class="chevron"><i class="ph ph-caret-down"></i></span>
     </div>
     <ul class="item-list">
       <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Pase de vaporetto de varios días o app ACTV cargada<span class="item-note">Mejor comprarlo con antelación online</span></span><span class="badge esencial">Esencial</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Calzado con suela antideslizante<span class="item-note">Puentes y barcas mojadas son resbaladizos</span></span><span class="badge venecia">Venecia</span></li>
       <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Reserva Basílica San Marcos (entrada gratuita pero necesita cita online)</span><span class="badge venecia">Venecia</span></li>
       <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Reserva Palacio Ducal (evita colas enormes)</span><span class="badge venecia">Venecia</span></li>
       <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Nota del alojamiento con dirección exacta en vaporetto<span class="item-note">Las direcciones venecianas confunden mucho</span></span><span class="badge esencial">Esencial</span></li>
       <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Excursión a Burano / Murano apuntada (salidas desde Fondamente Nove)</span><span class="badge venecia">Venecia</span></li>
       <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Efectivo extra: muchos bares pequeños no aceptan tarjeta</span><span class="badge venecia">Venecia</span></li>
-    </ul>
-  </div>
-
-  <!-- ANTES DE SALIR -->
-  <div class="cat-card wide" data-cat>
-    <div class="cat-header" onclick="toggleCat(this)">
-      <span class="cat-icon">🏠</span>
-      <span class="cat-title">Antes de salir de casa</span>
-      <span class="cat-count"></span>
-      <span class="chevron">▾</span>
-    </div>
-    <ul class="item-list">
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Avisar al banco de que viajas a Italia (evitar bloqueos)</span><span class="badge esencial">Esencial</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Comprobar roaming / datos internacionales (UE: sin coste extra)</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Cerrar gas, agua y persianas</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Programar calefacción/AC en mínimo</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Dejar llave a alguien de confianza</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Cargar todos los dispositivos la noche anterior</span></li>
-      <li class="item" onclick="toggle(this)"><input type="checkbox"><span class="checkmark">✓</span><span class="item-text">Revisar el peso de la maleta (23 kg facturada / 10 kg cabina)</span></li>
     </ul>
   </div>
 
